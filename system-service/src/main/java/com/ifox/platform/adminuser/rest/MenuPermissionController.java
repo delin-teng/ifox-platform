@@ -119,10 +119,11 @@ public class MenuPermissionController extends BaseController<MenuPermissionVO> {
         return successQueryOneResponse(menuPermissionVO);
     }
 
+    @SuppressWarnings("unchecked")
     @ApiOperation("添加菜单权限")
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ApiResponses({
-        @ApiResponse(code = 404, message = "父菜单权限不存在")
+        @ApiResponse(code = 708, message = "父菜单权限不存在")
     })
     public @ResponseBody
     OneResponse<MenuPermissionVO> save(@ApiParam @RequestBody MenuPermissionRequest request, @RequestHeader("Authorization") String token, HttpServletResponse response){
@@ -139,11 +140,10 @@ public class MenuPermissionController extends BaseController<MenuPermissionVO> {
         MenuPermissionEO parentMenu = menuPermissionService.get(menuPermissionEO.getParentId());
         if(parentMenu == null){
             logger.info("父菜单权限不存在 uuid:{}", uuid);
-            return super.notFoundOneResponse("父菜单权限不存在", response);
+            return new OneResponse(PARENT_MENU_PERMISSION_NOT_FOUND, "父菜单权限不存在", response);
         }
 
         menuPermissionEO.setLevel(parentMenu.getLevel() + 1);
-        menuPermissionEO.setStatus(MenuPermissionEO.MenuEOStatus.ACTIVE);
         menuPermissionService.save(menuPermissionEO);
 
         MenuPermissionVO menuPermissionVO = new MenuPermissionVO();
@@ -184,12 +184,13 @@ public class MenuPermissionController extends BaseController<MenuPermissionVO> {
             return new BaseResponse(CONTAIN_CHILD_MENU_CAN_NOT_DELETE, "菜单包含子菜单，请先删除子菜单！");
         }
 
-        menuPermissionService.delete(id, menuPermissionEO);
+        menuPermissionService.delete(menuPermissionEO);
 
         logger.info(successDelete + " uuid:{}", uuid);
         return successDeleteBaseResponse();
     }
 
+    @SuppressWarnings("unchecked")
     @ApiOperation("修改菜单权限")
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
     public @ResponseBody
