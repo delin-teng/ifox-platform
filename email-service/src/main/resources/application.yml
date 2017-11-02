@@ -4,6 +4,10 @@ server:
   tomcat:
     uri-encoding: UTF-8
 
+email-service:
+  token: 1234567890Yeager
+
+#==================== spring Setting =====================#
 spring:
   mail:
     host: smtp.163.com
@@ -16,6 +20,13 @@ spring:
           auth: true
           startssl.enable: true
           startssl.required: true
-
-email-service:
-  token: 1234567890Yeager
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  mvc:
+    static-path-pattern: /**
+  http.multipart:
+      max-request-size: 30MB
+      max-file-size: 30MB
